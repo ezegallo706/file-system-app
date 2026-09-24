@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Consulta médica general",
+    "description": "Atención general para revisión y diagnóstico inicial.",
+    "duration": 30,
+    "price": 12000,
+    "category": "salud",
+    "available": true
+  },
+  {
+    "id": 2,
+    "name": "Terapia física",
+    "description": "Sesión de rehabilitación y movilidad corporal.",
+    "duration": 45,
+    "price": 15000,
+    "category": "rehabilitación",
+    "available": true
+  },
+  {
+    "id": 3,
+    "name": "Servicio prueba",
+    "description": "Prueba de servicio",
+    "duration": 45,
+    "price": 5000,
+    "category": "estetica",
+    "available": true
+  },
+  {
+    "id": 4,
+    "name": "Servicio prueba",
+    "description": "Prueba de servicio",
+    "duration": 45,
+    "price": 5000,
+    "category": "estetica",
+    "available": true
+  }
+]
