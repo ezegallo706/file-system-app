@@ -21,6 +21,16 @@ npm start
 
 La API estará disponible en `http://localhost:8080` por defecto.
 
+El puerto puede configurarse mediante la variable `PORT`. El archivo `.env.example` contiene el valor de referencia; si se crea un `.env` local, debe mantenerse fuera del repositorio.
+
+## Organización
+
+- `src/routes/` define los endpoints y los conecta con sus controllers.
+- `src/controllers/` procesa requests, valida los datos de entrada y construye las respuestas HTTP.
+- `src/managers/` contiene la lógica de persistencia en archivos JSON.
+- `src/data/` almacena los servicios y las reservas.
+- `src/config/` carga y valida la configuración del entorno.
+
 ## Endpoints
 
 ### Servicios
@@ -36,6 +46,8 @@ La API estará disponible en `http://localhost:8080` por defecto.
 - `POST /api/bookings` — crea una reserva
 - `GET /api/bookings/:bid` — devuelve una reserva por id
 - `POST /api/bookings/:bid/services/:sid` — agrega un servicio a la reserva
+
+No existe `GET /api/bookings` para listar todas las reservas; para consultar una, se debe indicar su `bid`.
 
 ## Persistencia
 
