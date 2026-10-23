@@ -1,9 +1,6 @@
 const express = require("express");
-const { validateEnv } = require("./config/env.config");
 const servicesRouter = require("./routes/services.router");
 const bookingsRouter = require("./routes/bookings.router");
-
-validateEnv();
 
 const app = express();
 

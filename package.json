@@ -1,7 +1,7 @@
 {
   "name": "file-system-app",
   "version": "1.0.0",
-  "description": "API REST con Express y FileSystem para gestionar servicios y reservas",
+  "description": "API REST con Express y MongoDB para gestionar servicios y reservas",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -11,7 +11,7 @@
   "keywords": [
     "express",
     "api",
-    "filesystem",
+    "mongodb",
     "reservas",
     "servicios"
   ],
@@ -20,6 +20,7 @@
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mongoose": "^8.24.6"
   }
 }

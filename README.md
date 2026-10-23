@@ -1,17 +1,21 @@
 # Sistema Backend de Turnos y Reservas
 
-API REST construida con Node.js + Express + FileSystem para gestionar servicios y reservas con persistencia en archivos JSON.
+API REST construida con Node.js, Express y Mongoose para gestionar servicios y reservas con persistencia en MongoDB Atlas.
 
 ## Requisitos
 
 - Node.js 18+
 - npm
+- Una instancia de MongoDB Atlas o MongoDB compatible
 
 ## Instalación
 
 ```bash
 npm install
+copy .env.example .env
 ```
+
+Configura `MONGO_URI` en `.env` con la URI de conexión de tu base de datos. No compartas ni subas ese archivo al repositorio.
 
 ## Ejecución
 
@@ -39,7 +43,13 @@ La API estará disponible en `http://localhost:8080` por defecto.
 
 ## Persistencia
 
-La información se guarda en archivos JSON dentro de la carpeta `data`.
+La persistencia se realiza en MongoDB mediante Mongoose. Los modelos se encuentran en `src/models`, y la conexión se inicia antes de que el servidor empiece a escuchar.
+
+La API responde con identificadores MongoDB (`_id`). En las reservas, `services` es una lista de referencias a documentos de servicios con el formato `{ "service": "<ObjectId>", "quantity": 1 }`.
+
+## Estructura
+
+Las rutas delegan en controladores, servicios, repositorios y DAO. La capa DAO es la única que consulta o modifica modelos de Mongoose.
 
 ## Ejemplo de creación de servicio
 

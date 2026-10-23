@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const REQUIRED_ENV_VARS = [];
+const REQUIRED_ENV_VARS = ["MONGO_URI"];
 
 function validateEnv() {
   const missing = REQUIRED_ENV_VARS.filter((key) => {
