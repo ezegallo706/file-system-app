@@ -21,7 +21,10 @@ app.use("/api/bookings", bookingsRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ error: "Error interno del servidor" });
+  const statusCode = Number.isInteger(err.statusCode) ? err.statusCode : 500;
+  const response = { error: statusCode === 500 ? "Error interno del servidor" : err.message };
+  if (err.details) response.details = err.details;
+  res.status(statusCode).json(response);
 });
 
 module.exports = app;
