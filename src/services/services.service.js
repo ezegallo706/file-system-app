@@ -1,61 +1,70 @@
-const ServicesRepository = require("../repositories/services.repository");
+import { ServicesRepository } from "../repositories/services.repository.js"
 
-function createError(message, statusCode) {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  return error;
-}
+export class ServicesService {
 
-class ServicesService {
-  constructor(repository = new ServicesRepository()) {
-    this.repository = repository;
-  }
-
-  getServices() {
-    return this.repository.getAll();
-  }
-
-  async getAvailableServices() {
-    const services = await this.repository.getAll();
-    return services.filter((service) => service.available);
-  }
-
-  async getServiceById(id) {
-    const service = await this.repository.getById(id);
-    if (!service) throw createError("Servicio no encontrado", 404);
-    return service;
-  }
-
-  async createService(data) {
-    const { name, description, duration, price, category, available } = data || {};
-
-    if (!name || !description || !duration || price === undefined || !category || available === undefined) {
-      throw createError("Faltan campos obligatorios", 400);
+    constructor(repository = new ServicesRepository()) {
+        this.repository = repository
     }
 
-    if (price < 0) throw createError("El precio no puede ser negativo", 400);
+    getServices() {
+        return this.repository.getAll()
+    }
 
-    return this.repository.create({
-      name,
-      description,
-      duration: Number(duration),
-      price: Number(price),
-      category,
-      available,
-    });
-  }
+    async getServiceById(id) {
 
-  async updateService(id, data) {
-    const service = await this.repository.update(id, data || {});
-    if (!service) throw createError("Servicio no encontrado", 404);
-    return service;
-  }
+        const service = await this.repository.getById(id)
 
-  async deleteService(id) {
-    const service = await this.repository.delete(id);
-    if (!service) throw createError("Servicio no encontrado", 404);
-    return service;
-  }
+        if (!service) {
+            throw new Error("Servicio no encontrado")
+        }
+
+
+        return service
+    }
+
+    async createService(data) {
+
+        const { name, description, duration, price, category } = data
+
+        if (!name || !description || !duration || price === undefined || !category) {
+            throw new Error("Faltan campos obligatorios")
+        }
+
+        if (price < 0) {
+            throw new Error("El precio no puede ser negativo")
+        }
+
+        return this.repository.create({
+            name,
+            description,
+            duration,
+            price,
+            category
+        })
+    }
+
+    async updateService(id, data) {
+
+        const service = await this.repository.update(id, data)
+
+
+        if (!service) {
+            throw new Error("Servicio no encontrado")
+        }
+
+
+        return service
+    }
+
+    async deleteService(id) {
+
+        const service = await this.repository.delete(id)
+
+
+        if (!service) {
+            throw new Error("Servicio no encontrado")
+        }
+
+        return service
+    }
 }
-
-module.exports = { ServicesService };

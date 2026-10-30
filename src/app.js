@@ -1,30 +1,28 @@
-const express = require("express");
-const { validateEnv } = require("./config/env.config");
-const servicesRouter = require("./routes/services.router");
-const bookingsRouter = require("./routes/bookings.router");
-
-validateEnv();
+import express from "express";
+import { engine } from "express-handlebars";
+import serviceRouter from "./routes/services.router.js";
+import bookingRouter from "./routes/bookings.router.js";
+import viewsRouter from "./routes/views.router.js";
+import __dirname from "./utils.js";
 
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "API del Sistema de Turnos y Reservas",
-  });
+app.engine("handlebars", engine({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+app.set("views", __dirname + "/views");
+
+app.use(express.static(__dirname + "/public"));
+
+app.use("/", viewsRouter);
+
+app.use("/api/services", serviceRouter);
+app.use("/api/bookings", bookingRouter);
+
+app.use((req, res, next) => {
+    res.status(404).send("la pagina solicitada no existe");
 });
 
-app.use("/api/services", servicesRouter);
-app.use("/api/bookings", bookingsRouter);
-
-app.use((err, req, res, next) => {
-  console.error(err);
-  const statusCode = Number.isInteger(err.statusCode) ? err.statusCode : 500;
-  const response = { error: statusCode === 500 ? "Error interno del servidor" : err.message };
-  if (err.details) response.details = err.details;
-  res.status(statusCode).json(response);
-});
-
-module.exports = app;
+export default app;

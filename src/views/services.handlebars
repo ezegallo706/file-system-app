@@ -1,0 +1,16 @@
+<link rel="stylesheet" href="/css/services.css">
+
+<h2>Acá van los servicios</h2>
+
+{{#each services}}
+    {{#if this.available}}
+        <div class="service-card">
+            <p><strong>Nombre:</strong> {{this.name}}</p>
+            <p><strong>Precio:</strong> ${{this.price}}</p>
+        </div>
+        <br>
+    {{/if}}
+{{/each}}
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/services.js"></script>

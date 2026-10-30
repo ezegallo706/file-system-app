@@ -1,9 +1,29 @@
-const express = require("express");
-const bookingsController = require("../controllers/bookings.controller");
+import { Router } from "express";
 
-const router = express.Router();
-router.post("/", bookingsController.createBooking);
-router.get("/:bid", bookingsController.getBookingById);
-router.post("/:bid/services/:sid", bookingsController.addServiceToBooking);
+const router = Router();
 
-module.exports = router;
+router.get("/api/bookings/:bid", async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+});
+
+router.post("/api/bookings", async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+});
+
+router.post("/api/bookings/:bid/services/:sid", async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+});
+
+export default router;

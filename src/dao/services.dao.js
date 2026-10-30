@@ -1,48 +1,42 @@
-const path = require("path");
-const JsonFileDAO = require("./jsonFile.dao");
+import { ServiceModel } from "../models/services.models.js";
+export class ServicesDAO {
 
-class ServicesDAO {
-  constructor(fileStore = new JsonFileDAO(path.join(__dirname, "../data/services.json"))) {
-    this.fileStore = fileStore;
-  }
+    async getAll() {
 
-  async getAll() {
-    return this.fileStore.readAll();
-  }
+        const services = await ServiceModel.find().lean()
+        return services
+    }
 
-  async getById(id) {
-    const services = await this.getAll();
-    return services.find((service) => Number(service.id) === Number(id)) || null;
-  }
+    async getById(id) {
 
-  async create(data) {
-    const services = await this.getAll();
-    const ids = services.map((service) => Number(service.id)).filter(Number.isFinite);
-    const newService = { id: ids.length ? Math.max(...ids) + 1 : 1, ...data };
-    services.push(newService);
-    await this.fileStore.writeAll(services);
-    return newService;
-  }
+        const service = await ServiceModel.findById(id)
 
-  async update(id, data) {
-    const services = await this.getAll();
-    const index = services.findIndex((service) => Number(service.id) === Number(id));
-    if (index === -1) return null;
+        return service
+    }
 
-    services[index] = { ...services[index], ...data, id: services[index].id };
-    await this.fileStore.writeAll(services);
-    return services[index];
-  }
 
-  async delete(id) {
-    const services = await this.getAll();
-    const index = services.findIndex((service) => Number(service.id) === Number(id));
-    if (index === -1) return null;
+    async create(data) {
 
-    const [deletedService] = services.splice(index, 1);
-    await this.fileStore.writeAll(services);
-    return deletedService;
-  }
+        const newService = await ServiceModel.create(data)
+
+
+        return newService
+    }
+
+
+    async update(id, data) {
+
+        const service = await ServiceModel.findByIdAndUpdate(id, data, { new: true })
+
+
+        return service
+    }
+
+
+    async delete(id) {
+
+        const service = await ServiceModel.findByIdAndDelete(id)
+
+        return service
+    }
 }
-
-module.exports = ServicesDAO;
