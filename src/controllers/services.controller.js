@@ -50,7 +50,7 @@ export const createService = async (req, res) => {
 
     try {
         const service = await servicesService.createService(req.body)
-        socketServer.emit("create-service", service)
+        socketServer.emit("service-created", service)
 
         return res.status(201).json({
             status: "success",

@@ -10,7 +10,7 @@ const showEmptyState = () => {
     servicesList.append(emptyState);
 };
 
-socketClient.on("create-service", (service) => {
+socketClient.on("service-created", (service) => {
     if (!servicesList || !service.available) return;
 
     servicesList.querySelector(".empty-state")?.remove();
