@@ -50,6 +50,7 @@ export const createService = async (req, res) => {
 
     try {
         const service = await servicesService.createService(req.body)
+        socketServer.emit("create-service", service)
 
         return res.status(201).json({
             status: "success",
@@ -95,9 +96,7 @@ export const deleteService = async (req, res) => {
         const service = await servicesService.deleteService(
             req.params.sid
         )
-            .then(data => {
-                socketServer.emit("delete-service", data)
-            })
+        socketServer.emit("delete-service", service)
 
 
         return res.status(200).json({

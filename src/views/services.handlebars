@@ -2,15 +2,16 @@
 
 <h2>Acá van los servicios</h2>
 
-{{#each services}}
-    {{#if this.available}}
-        <div class="service-card">
-            <p><strong>Nombre:</strong> {{this.name}}</p>
-            <p><strong>Precio:</strong> ${{this.price}}</p>
-        </div>
-        <br>
-    {{/if}}
-{{/each}}
+<ul data-services-list>
+    {{#each services}}
+        {{#if this.available}}
+            <li class="service-card service-item" data-service-id="{{this._id}}">
+                <p><strong>Nombre:</strong> {{this.name}}</p>
+                <p><strong>Precio:</strong> ${{this.price}}</p>
+            </li>
+        {{/if}}
+    {{/each}}
+</ul>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/services.js"></script>
