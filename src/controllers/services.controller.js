@@ -6,11 +6,12 @@ export const getServices = async (req, res) => {
 
     try {
 
-        const services = await servicesService.getServices()
+        const { services, pagination } = await servicesService.getServices(res.locals.servicesQuery)
 
         return res.status(200).json({
             status: "success",
-            payload: services
+            payload: services,
+            pagination
         })
 
     } catch (error) {

@@ -55,17 +55,52 @@ Todas las respuestas exitosas usan `{ "status": "success", "payload": ... }`; lo
 
 ### Servicios
 
-- `GET /api/services` — lista servicios.
+- `GET /api/services` — lista servicios con filtros y paginación. Acepta `category`, `available` (`true`/`false`), `page`, `limit` (máximo 100), `sortBy` (`name`, `price`, `duration`, `category`, `available`, `createdAt`) y `order` (`asc`/`desc`). Los valores por defecto son página `1`, límite `10`, orden por `createdAt` ascendente.
 - `GET /api/services/:sid` — consulta un servicio.
 - `POST /api/services` — crea un servicio.
 - `PUT /api/services/:sid` — actualiza un servicio.
 - `DELETE /api/services/:sid` — elimina un servicio.
 
+Ejemplos de consultas:
+
+```text
+GET /api/services?category=estética&available=true
+GET /api/services?page=2&limit=5&sortBy=price&order=desc
+GET /api/services?category=Spa&available=false&page=1&limit=10&sortBy=name&order=asc
+```
+
+La respuesta mantiene la lista en `payload` y agrega `pagination` con `totalResults`, `currentPage`, `limit`, `totalPages`, `hasPrevPage` y `hasNextPage`.
+
+```json
+{
+  "status": "success",
+  "payload": [{ "name": "Masaje", "price": 5000 }],
+  "pagination": {
+    "totalResults": 12,
+    "currentPage": 2,
+    "limit": 5,
+    "totalPages": 3,
+    "hasPrevPage": true,
+    "hasNextPage": true
+  }
+}
+```
+
+Los bodies de creación y actualización de servicios se validan con Zod antes de acceder a MongoDB. La reserva valida nombre, email, fecha y hora; agregar un servicio valida que `quantity` sea un entero mayor que cero (por defecto `1`). Las consultas avanzadas también validan sus parámetros. Los datos inválidos responden `400` con un mensaje explicativo.
+
 ### Reservas
 
 - `POST /api/bookings` — crea una reserva. `clientName` y `clientEmail` son obligatorios; `date` y `time` son opcionales.
-- `GET /api/bookings/:bid` — consulta una reserva y sus servicios asociados.
+- `GET /api/bookings/:bid` — consulta una reserva y sus servicios asociados con `populate`; devuelve los datos del cliente, email, fecha, hora y estado, más los servicios completos y su cantidad. En MongoDB se almacenan como referencias `{ service: ObjectId, quantity: Number }`.
 - `POST /api/bookings/:bid/services/:sid` — asocia un servicio. El body puede incluir `{"quantity": 2}`; si se omite, la cantidad es `1`. Si el servicio ya estaba asociado, se acumula la cantidad.
+
+Para consultar una reserva con los datos completos de sus servicios:
+
+```text
+GET /api/bookings/<id-de-reserva>
+```
+
+La respuesta conserva cada entrada de `services` con `quantity` y expande `service` con los datos del documento de servicio. `populate` se usa solo al consultar, no para guardar el objeto del servicio en la reserva.
 
 ## Probar Socket.IO
 

@@ -6,8 +6,8 @@ export class ServicesService {
         this.repository = repository
     }
 
-    getServices() {
-        return this.repository.getAll()
+    getServices(query) {
+        return this.repository.getAll(query)
     }
 
     async getServiceById(id) {
@@ -24,23 +24,7 @@ export class ServicesService {
 
     async createService(data) {
 
-        const { name, description, duration, price, category } = data
-
-        if (!name || !description || !duration || price === undefined || !category) {
-            throw new Error("Faltan campos obligatorios")
-        }
-
-        if (price < 0) {
-            throw new Error("El precio no puede ser negativo")
-        }
-
-        return this.repository.create({
-            name,
-            description,
-            duration,
-            price,
-            category
-        })
+        return this.repository.create(data)
     }
 
     async updateService(id, data) {

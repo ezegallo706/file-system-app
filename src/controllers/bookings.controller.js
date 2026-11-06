@@ -26,22 +26,10 @@ class BookingController {
 	async createBooking(req, res) {
 		const { clientName, clientEmail, date, time } = req.body;
 
-		if (
-			typeof clientName !== "string" ||
-			!clientName.trim() ||
-			typeof clientEmail !== "string" ||
-			!clientEmail.trim()
-		) {
-			return res.status(400).json({
-				status: "error",
-				message: "El nombre y el email del cliente son obligatorios"
-			});
-		}
-
 		try {
 			const booking = await BookingModel.create({
-				clientName: clientName.trim(),
-				clientEmail: clientEmail.trim(),
+				clientName,
+				clientEmail,
 				...(date && { date }),
 				...(time && { time })
 			});
@@ -55,14 +43,10 @@ class BookingController {
 
 	async addServiceToBooking(req, res) {
 		const { bid, sid } = req.params;
-		const quantity = req.body.quantity === undefined ? 1 : Number(req.body.quantity);
+		const { quantity } = req.body;
 
 		if (!mongoose.isValidObjectId(bid) || !mongoose.isValidObjectId(sid)) {
 			return res.status(400).json({ status: "error", message: "ID de reserva o servicio inválido" });
-		}
-
-		if (!Number.isInteger(quantity) || quantity < 1) {
-			return res.status(400).json({ status: "error", message: "La cantidad debe ser un entero mayor a cero" });
 		}
 
 		try {

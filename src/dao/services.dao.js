@@ -1,10 +1,40 @@
 import { ServiceModel } from "../models/services.models.js";
 export class ServicesDAO {
 
-    async getAll() {
+    async getAll({
+        category,
+        available,
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "asc"
+    } = {}) {
+        const filter = {
+            ...(category && { category }),
+            ...(available !== undefined && { available })
+        }
+        const sortDirection = order === "desc" ? -1 : 1
+        const [services, totalResults] = await Promise.all([
+            ServiceModel.find(filter)
+                .sort({ [sortBy]: sortDirection })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+            ServiceModel.countDocuments(filter)
+        ])
+        const totalPages = Math.ceil(totalResults / limit)
 
-        const services = await ServiceModel.find().lean()
-        return services
+        return {
+            services,
+            pagination: {
+                totalResults,
+                currentPage: page,
+                limit,
+                totalPages,
+                hasPrevPage: page > 1,
+                hasNextPage: page < totalPages
+            }
+        }
     }
 
     async getById(id) {
