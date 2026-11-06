@@ -1,0 +1,75 @@
+<header class="site-header">
+    <a href="/services">Servicios</a>
+    <a href="/bookings" aria-current="page">Reservas</a>
+</header>
+
+<main class="page-content booking-page">
+    <h1>Reservas</h1>
+
+    <p id="booking-feedback" class="booking-feedback" role="status" aria-live="polite"></p>
+
+    <section class="booking-section" aria-labelledby="create-booking-title">
+        <h2 id="create-booking-title">Nueva reserva</h2>
+        <form id="create-booking-form" class="booking-form">
+            <label>
+                Nombre del cliente
+                <input name="clientName" autocomplete="name" required>
+            </label>
+            <label>
+                Email
+                <input name="clientEmail" type="email" autocomplete="email" required>
+            </label>
+            <label>
+                Fecha
+                <input name="date" type="date">
+            </label>
+            <label>
+                Hora
+                <input name="time" type="time">
+            </label>
+            <button type="submit">Crear reserva</button>
+        </form>
+    </section>
+
+    <section class="booking-section" aria-labelledby="find-booking-title">
+        <h2 id="find-booking-title">Consultar reserva</h2>
+        <form id="find-booking-form" class="booking-inline-form">
+            <label for="booking-id">ID de reserva</label>
+            <input id="booking-id" name="bookingId" autocomplete="off" required>
+            <button type="submit">Buscar</button>
+        </form>
+    </section>
+
+    <section class="booking-section" aria-labelledby="add-service-title">
+        <h2 id="add-service-title">Agregar servicio</h2>
+        <form id="add-service-form" class="booking-form">
+            <label>
+                ID de reserva
+                <input name="bookingId" autocomplete="off" required>
+            </label>
+            <label>
+                Servicio disponible
+                <select name="serviceId" required>
+                    <option value="">Seleccioná un servicio</option>
+                    {{#each services}}
+                        <option value="{{this._id}}">{{this.name}} - ${{this.price}}</option>
+                    {{/each}}
+                </select>
+            </label>
+            <label>
+                Cantidad
+                <input name="quantity" type="number" min="1" step="1" value="1" required>
+            </label>
+            <button type="submit">Agregar a la reserva</button>
+        </form>
+    </section>
+
+    <section class="booking-section" aria-labelledby="booking-detail-title">
+        <h2 id="booking-detail-title">Detalle</h2>
+        <div id="booking-detail" aria-live="polite">
+            <p>Creá una reserva o buscá una existente para ver su detalle.</p>
+        </div>
+    </section>
+</main>
+
+<script src="/js/bookings.js"></script>

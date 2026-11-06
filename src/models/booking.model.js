@@ -19,7 +19,19 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         enum: ["pending", "confirmed", "cancelled"],
         default: "pending"
-    }
+    },
+    services: [{
+        service: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "services",
+            required: true
+        },
+        quantity: {
+            type: Number,
+            min: 1,
+            default: 1
+        }
+    }]
 })
 
 export const BookingModel = mongoose.model("booking", bookingSchema)

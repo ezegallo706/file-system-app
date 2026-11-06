@@ -1,4 +1,3 @@
-import { socketServer } from "../server.js"
 import { ServicesService } from "../services/services.service.js"
 
 const servicesService = new ServicesService()
@@ -50,7 +49,7 @@ export const createService = async (req, res) => {
 
     try {
         const service = await servicesService.createService(req.body)
-        socketServer.emit("service-created", service)
+        req.app.get("socketServer")?.emit("service-created", service)
 
         return res.status(201).json({
             status: "success",
@@ -96,7 +95,7 @@ export const deleteService = async (req, res) => {
         const service = await servicesService.deleteService(
             req.params.sid
         )
-        socketServer.emit("delete-service", service)
+        req.app.get("socketServer")?.emit("delete-service", service)
 
 
         return res.status(200).json({
