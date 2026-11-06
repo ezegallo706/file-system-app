@@ -3,11 +3,10 @@ import { envConfig } from "./env.config.js"
 
 
 export const connectDB = async () => {
-     try {
-        mongoose.connect(envConfig.mongoUri)
-        console.log("MongoDB connectado")
-     } catch (error) {
-        console.error("Error al conectarse a MongoDB", error)
-        process.exit(1)
-     }
+   if (!envConfig.mongoUri) {
+      throw new Error("Falta configurar MONGO_URI en el archivo .env")
+   }
+
+   await mongoose.connect(envConfig.mongoUri)
+   console.log("MongoDB conectado")
 }

@@ -10,11 +10,20 @@ const httpServer = createServer(app);
 export const socketServer = new Server(httpServer);
 app.set("socketServer", socketServer);
 
-httpServer.listen(envConfig.port, async () => {
-    await connectDB()
-    console.log(`Servidor corriendo en http://localhost:${envConfig.port}`);
-});
-
 socketServer.on("connection", (socketClient) => {
     console.log("Nuevo cliente conectado");
 });
+
+const startServer = async () => {
+    try {
+        await connectDB();
+        httpServer.listen(envConfig.port, () => {
+            console.log(`Servidor corriendo en http://localhost:${envConfig.port}`);
+        });
+    } catch (error) {
+        console.error("No se pudo iniciar el servidor:", error.message);
+        process.exitCode = 1;
+    }
+};
+
+startServer();
