@@ -1,8 +1,6 @@
-<link rel="stylesheet" href="/css/services.css">
-
 <h2>Acá van los servicios</h2>
 
-<ul data-services-list>
+<ul class="service-list" data-services-list>
     {{#each services}}
         {{#if this.available}}
             <li class="service-card service-item" data-service-id="{{this._id}}">
