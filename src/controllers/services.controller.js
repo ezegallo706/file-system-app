@@ -1,4 +1,4 @@
-const serviceService = require("../services/ServiceService");
+const { serviceService } = require("../container");
 const asyncHandler = require("./asyncHandler");
 
 module.exports = {

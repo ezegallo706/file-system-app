@@ -1,8 +1,4 @@
-const path = require("path");
-const ServiceManager = require("../managers/ServiceManager");
 const ServiceError = require("./ServiceError");
-
-const serviceManager = new ServiceManager(path.join(__dirname, "../data/services.json"));
 
 function validateServicePayload(payload) {
   const requiredFields = ["name", "description", "duration", "price", "category", "available"];
@@ -41,31 +37,35 @@ function throwValidationError(payload) {
 }
 
 class ServiceService {
+  constructor(serviceRepository) {
+    this.serviceRepository = serviceRepository;
+  }
+
   getServices() {
-    return serviceManager.getServices();
+    return this.serviceRepository.findAll();
   }
 
   getServiceById(id) {
-    return serviceManager.getServiceById(id);
+    return this.serviceRepository.findById(id);
   }
 
   async createService(payload) {
     throwValidationError(payload);
-    return serviceManager.addService(payload);
+    return this.serviceRepository.create(payload);
   }
 
   async updateService(id, payload) {
-    const existingService = await serviceManager.getServiceById(id);
+    const existingService = await this.serviceRepository.findById(id);
     if (!existingService) {
       throw new ServiceError(404, { error: "Servicio no encontrado" });
     }
 
     throwValidationError({ ...existingService, ...payload });
-    return serviceManager.updateService(id, payload);
+    return this.serviceRepository.update(id, payload);
   }
 
   async deleteService(id) {
-    const deletedService = await serviceManager.deleteService(id);
+    const deletedService = await this.serviceRepository.delete(id);
     if (!deletedService) {
       throw new ServiceError(404, { error: "Servicio no encontrado" });
     }
@@ -73,4 +73,4 @@ class ServiceService {
   }
 }
 
-module.exports = new ServiceService();
+module.exports = ServiceService;

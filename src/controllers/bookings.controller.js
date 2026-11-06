@@ -1,4 +1,4 @@
-const bookingService = require("../services/BookingService");
+const { bookingService } = require("../container");
 const asyncHandler = require("./asyncHandler");
 
 module.exports = {

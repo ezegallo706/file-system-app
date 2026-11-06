@@ -1,10 +1,4 @@
-const path = require("path");
-const BookingManager = require("../managers/BookingManager");
-const ServiceManager = require("../managers/ServiceManager");
 const ServiceError = require("./ServiceError");
-
-const bookingManager = new BookingManager(path.join(__dirname, "../data/bookings.json"));
-const serviceManager = new ServiceManager(path.join(__dirname, "../data/services.json"));
 
 function validateBookingPayload(payload) {
   const requiredFields = ["clientName", "clientEmail", "date", "time", "status"];
@@ -33,6 +27,11 @@ function validateBookingPayload(payload) {
 }
 
 class BookingService {
+  constructor(bookingRepository, serviceRepository) {
+    this.bookingRepository = bookingRepository;
+    this.serviceRepository = serviceRepository;
+  }
+
   async createBooking(payload) {
     const normalizedBooking = {
       ...payload,
@@ -43,11 +42,11 @@ class BookingService {
     if (errors.length > 0) {
       throw new ServiceError(400, { error: "Datos inválidos", details: errors });
     }
-    return bookingManager.createBooking(normalizedBooking);
+    return this.bookingRepository.create(normalizedBooking);
   }
 
   async getBookingById(id) {
-    const booking = await bookingManager.getBookingById(id);
+    const booking = await this.bookingRepository.findById(id);
     if (!booking) {
       throw new ServiceError(404, { error: "Reserva no encontrada" });
     }
@@ -55,18 +54,29 @@ class BookingService {
   }
 
   async addServiceToBooking(bookingId, serviceId, quantity) {
-    const booking = await bookingManager.getBookingById(bookingId);
+    const booking = await this.bookingRepository.findById(bookingId);
     if (!booking) {
       throw new ServiceError(404, { error: "Reserva no encontrada" });
     }
 
-    const service = await serviceManager.getServiceById(serviceId);
+    const service = await this.serviceRepository.findById(serviceId);
     if (!service) {
       throw new ServiceError(404, { error: "Servicio no encontrado" });
     }
 
-    return bookingManager.addServiceToBooking(bookingId, serviceId, quantity);
+    const parsedQuantity = Number(quantity) > 0 ? Number(quantity) : 1;
+    const bookingServices = Array.isArray(booking.services) ? booking.services : [];
+    const existingServiceIndex = bookingServices.findIndex((item) => Number(item.service) === Number(serviceId));
+    const updatedServices = existingServiceIndex !== -1
+      ? bookingServices.map((item, index) => (
+        index === existingServiceIndex
+          ? { ...item, quantity: item.quantity + parsedQuantity }
+          : item
+      ))
+      : [...bookingServices, { service: Number(serviceId), quantity: parsedQuantity }];
+
+    return this.bookingRepository.update(bookingId, { services: updatedServices });
   }
 }
 
-module.exports = new BookingService();
+module.exports = BookingService;
