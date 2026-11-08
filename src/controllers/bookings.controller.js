@@ -1,85 +1,45 @@
-import mongoose from "mongoose";
-import { BookingModel } from "../models/booking.model.js";
-import { ServiceModel } from "../models/services.models.js";
+import { BookingsService } from "../services/bookings.service.js";
 
-class BookingController {
-	async getBookingById(req, res) {
-		const { bid } = req.params;
+const bookingsService = new BookingsService();
 
-		if (!mongoose.isValidObjectId(bid)) {
-			return res.status(400).json({ status: "error", message: "ID de reserva inválido" });
-		}
-
-		try {
-			const booking = await BookingModel.findById(bid).populate("services.service");
-
-			if (!booking) {
-				return res.status(404).json({ status: "error", message: "Reserva no encontrada" });
-			}
-
-			return res.status(200).json({ status: "success", payload: booking });
-		} catch (error) {
-			return res.status(500).json({ status: "error", message: error.message });
-		}
+export const getBookings = async (req, res) => {
+	try {
+		const { bookings, pagination } = await bookingsService.getBookings(res.locals.bookingsQuery);
+		return res.status(200).json({ status: "success", payload: bookings, pagination });
+	} catch (error) {
+		return res.status(500).json({ status: "error", message: error.message });
 	}
+};
 
-	async createBooking(req, res) {
-		const { clientName, clientEmail, date, time } = req.body;
-
-		try {
-			const booking = await BookingModel.create({
-				clientName,
-				clientEmail,
-				...(date && { date }),
-				...(time && { time })
-			});
-
-			return res.status(201).json({ status: "success", payload: booking });
-		} catch (error) {
-			const statusCode = error.name === "ValidationError" ? 400 : 500;
-			return res.status(statusCode).json({ status: "error", message: error.message });
-		}
+export const getBookingById = async (req, res) => {
+	try {
+		const booking = await bookingsService.getBookingById(req.params.bid);
+		return res.status(200).json({ status: "success", payload: booking });
+	} catch (error) {
+		return res.status(error.statusCode ?? 500).json({ status: "error", message: error.message });
 	}
+};
 
-	async addServiceToBooking(req, res) {
-		const { bid, sid } = req.params;
-		const { quantity } = req.body;
-
-		if (!mongoose.isValidObjectId(bid) || !mongoose.isValidObjectId(sid)) {
-			return res.status(400).json({ status: "error", message: "ID de reserva o servicio inválido" });
-		}
-
-		try {
-			const booking = await BookingModel.findById(bid);
-			if (!booking) {
-				return res.status(404).json({ status: "error", message: "Reserva no encontrada" });
-			}
-
-			const service = await ServiceModel.findById(sid);
-			if (!service) {
-				return res.status(404).json({ status: "error", message: "Servicio no encontrado" });
-			}
-
-			if (!service.available) {
-				return res.status(400).json({ status: "error", message: "El servicio no está disponible" });
-			}
-
-			const existingService = booking.services.find((item) => item.service.toString() === sid);
-			if (existingService) {
-				existingService.quantity += quantity;
-			} else {
-				booking.services.push({ service: service._id, quantity });
-			}
-
-			await booking.save();
-			await booking.populate("services.service");
-
-			return res.status(200).json({ status: "success", payload: booking });
-		} catch (error) {
-			const statusCode = error.name === "ValidationError" ? 400 : 500;
-			return res.status(statusCode).json({ status: "error", message: error.message });
-		}
+export const createBooking = async (req, res) => {
+	try {
+		const booking = await bookingsService.createBooking(req.body);
+		return res.status(201).json({ status: "success", payload: booking });
+	} catch (error) {
+		return res.status(error.name === "ValidationError" ? 400 : 500)
+			.json({ status: "error", message: error.message });
 	}
-}
+};
 
-export default BookingController;
+export const addServiceToBooking = async (req, res) => {
+	try {
+		const booking = await bookingsService.addServiceToBooking(
+			req.params.bid,
+			req.params.sid,
+			req.body.quantity
+		);
+		return res.status(200).json({ status: "success", payload: booking });
+	} catch (error) {
+		return res.status(error.statusCode ?? (error.name === "ValidationError" ? 400 : 500))
+			.json({ status: "error", message: error.message });
+	}
+};

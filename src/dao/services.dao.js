@@ -4,6 +4,9 @@ export class ServicesDAO {
     async getAll({
         category,
         available,
+        search,
+        minPrice,
+        maxPrice,
         page = 1,
         limit = 10,
         sortBy = "createdAt",
@@ -11,7 +14,14 @@ export class ServicesDAO {
     } = {}) {
         const filter = {
             ...(category && { category }),
-            ...(available !== undefined && { available })
+            ...(available !== undefined && { available }),
+            ...(search && { name: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" } }),
+            ...((minPrice !== undefined || maxPrice !== undefined) && {
+                price: {
+                    ...(minPrice !== undefined && { $gte: minPrice }),
+                    ...(maxPrice !== undefined && { $lte: maxPrice })
+                }
+            })
         }
         const sortDirection = order === "desc" ? -1 : 1
         const [services, totalResults] = await Promise.all([
@@ -56,7 +66,7 @@ export class ServicesDAO {
 
     async update(id, data) {
 
-        const service = await ServiceModel.findByIdAndUpdate(id, data, { new: true })
+        const service = await ServiceModel.findByIdAndUpdate(id, data, { new: true, runValidators: true })
 
 
         return service

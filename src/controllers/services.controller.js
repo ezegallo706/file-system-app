@@ -39,7 +39,7 @@ export const getServiceById = async (req, res) => {
 
     } catch (error) {
 
-        return res.status(404).json({
+        return res.status(error.statusCode ?? 500).json({
             status: "error",
             message: error.message
         })
@@ -59,7 +59,7 @@ export const createService = async (req, res) => {
 
     } catch (error) {
 
-        return res.status(400).json({
+        return res.status(error.statusCode ?? (error.name === "ValidationError" ? 400 : 500)).json({
             status: "error",
             message: error.message
         })
@@ -74,6 +74,7 @@ export const updateService = async (req, res) => {
             req.params.sid,
             req.body
         )
+        req.app.get("socketServer")?.emit("service-updated", service)
 
         return res.status(200).json({
             status: "success",
@@ -82,7 +83,7 @@ export const updateService = async (req, res) => {
 
     } catch (error) {
 
-        return res.status(404).json({
+        return res.status(error.statusCode ?? (error.name === "ValidationError" ? 400 : 500)).json({
             status: "error",
             message: error.message
         })
@@ -106,7 +107,7 @@ export const deleteService = async (req, res) => {
 
     } catch (error) {
 
-        return res.status(404).json({
+        return res.status(error.statusCode ?? 500).json({
             status: "error",
             message: error.message
         })

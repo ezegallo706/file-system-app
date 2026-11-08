@@ -15,7 +15,7 @@ export class ServicesService {
         const service = await this.repository.getById(id)
 
         if (!service) {
-            throw new Error("Servicio no encontrado")
+            throw Object.assign(new Error("Servicio no encontrado"), { statusCode: 404 })
         }
 
 
@@ -33,7 +33,7 @@ export class ServicesService {
 
 
         if (!service) {
-            throw new Error("Servicio no encontrado")
+            throw Object.assign(new Error("Servicio no encontrado"), { statusCode: 404 })
         }
 
 
@@ -46,7 +46,7 @@ export class ServicesService {
 
 
         if (!service) {
-            throw new Error("Servicio no encontrado")
+            throw Object.assign(new Error("Servicio no encontrado"), { statusCode: 404 })
         }
 
         return service

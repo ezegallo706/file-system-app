@@ -10,10 +10,12 @@ router.get("/index", async (req, res, next) => {
 })
 
 router.get("/services", async (req, res, next) => {
-
-    const { services } = await new ServicesService().getServices();
-
-    res.status(200).render("services", { services });
+    try {
+        const { services } = await new ServicesService().getServices();
+        res.status(200).render("services", { services });
+    } catch (error) {
+        next(error);
+    }
 });
 
 router.get("/bookings", async (req, res, next) => {

@@ -10,14 +10,22 @@ const showEmptyState = () => {
     servicesList.append(emptyState);
 };
 
-socketClient.on("service-created", (service) => {
-    if (!servicesList || !service.available) return;
+const renderService = (service) => {
+    if (!servicesList || !service) return;
+
+    const serviceId = service._id ?? service.id;
+    const existingItem = servicesList.querySelector(`[data-service-id="${serviceId}"]`);
+    if (!service.available) {
+        existingItem?.remove();
+        showEmptyState();
+        return;
+    }
 
     servicesList.querySelector(".empty-state")?.remove();
 
-    const item = document.createElement("li");
+    const item = existingItem ?? document.createElement("li");
     item.className = "service-card service-item";
-    item.dataset.serviceId = service._id ?? service.id;
+    item.dataset.serviceId = serviceId;
 
     const name = document.createElement("p");
     const nameLabel = document.createElement("strong");
@@ -29,10 +37,12 @@ socketClient.on("service-created", (service) => {
     priceLabel.textContent = "Precio:";
     price.append(priceLabel, document.createTextNode(` $${service.price}`));
 
-    item.append(name, price);
-    servicesList.append(item);
-});
+    item.replaceChildren(name, price);
+    if (!existingItem) servicesList.append(item);
+};
 
+socketClient.on("service-created", renderService);
+socketClient.on("service-updated", renderService);
 socketClient.on("delete-service", (service) => {
     if (!servicesList || !service) return;
 

@@ -7,7 +7,13 @@ import {
     updateService,
     deleteService
 } from "../controllers/services.controller.js"
-import { validateBody, validateServicesQuery, createServiceSchema, updateServiceSchema } from "../middlewares/validate.js"
+import {
+    validateBody,
+    validateServicesQuery,
+    validateObjectIdParams,
+    createServiceSchema,
+    updateServiceSchema
+} from "../middlewares/validate.js"
 
 
 const router = Router()
@@ -15,13 +21,13 @@ const router = Router()
 
 router.get("/", validateServicesQuery, getServices)
 
-router.get("/:sid", getServiceById)
+router.get("/:sid", validateObjectIdParams("sid"), getServiceById)
 
 router.post("/", validateBody(createServiceSchema), createService)
 
-router.put("/:sid", validateBody(updateServiceSchema), updateService)
+router.put("/:sid", validateObjectIdParams("sid"), validateBody(updateServiceSchema), updateService)
 
-router.delete("/:sid", deleteService)
+router.delete("/:sid", validateObjectIdParams("sid"), deleteService)
 
 
 export default router
