@@ -12,7 +12,9 @@ router.get("/index", async (req, res, next) => {
 router.get("/services", async (req, res, next) => {
     try {
         const { services } = await new ServicesService().getServices();
-        res.status(200).render("services", { services });
+        res.status(200).render("services", {
+            services: services.filter((service) => service.available)
+        });
     } catch (error) {
         next(error);
     }
